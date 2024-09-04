@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="event.png" width="150">
+</p>
+
+<p align="center">
   <a href="https://github.com/Mr-Cheen1/Event/actions/workflows/lint.yml"><img src="https://github.com/Mr-Cheen1/Event/actions/workflows/lint.yml/badge.svg" alt="Lint Status"/></a>
   <a href="https://github.com/Mr-Cheen1/Event/actions/workflows/test.yml"><img src="https://github.com/Mr-Cheen1/Event/actions/workflows/test.yml/badge.svg" alt="Test Status"/></a>
   <a href="https://github.com/Mr-Cheen1/Event/actions/workflows/build.yml"><img src="https://github.com/Mr-Cheen1/Event/actions/workflows/build.yml/badge.svg" alt="Build Status"/></a>
@@ -25,7 +29,7 @@
    
    ```
    git clone https://github.com/Mr-Cheen1/Event.git
-   cd название-репозитория
+   cd Event
    ```
 
 2. Установите зависимости:
@@ -81,7 +85,7 @@ go run main.go
 Для запуска тестов используйте команду:
 
 ```
-go test ./...
+go test -race -count 100 ./...
 ```
 
 ## Принцип работы приложения:

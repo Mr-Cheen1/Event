@@ -6,11 +6,10 @@ import (
 	"strconv"
 	"time"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/joho/godotenv"
-
 	"github.com/Mr-Cheen1/Event/config"
 	"github.com/Mr-Cheen1/Event/events"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/joho/godotenv"
 )
 
 const (
