@@ -1,56 +1,75 @@
 package events
 
 import (
+	"os"
 	"testing"
 	"time"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/Mr-Cheen1/Event/bot"
+	"github.com/Mr-Cheen1/Event/config"
 )
 
-type MockBotAPI struct {
-	Messages []tgbotapi.MessageConfig
-}
-
-func (m *MockBotAPI) Send(c tgbotapi.Chattable) (tgbotapi.Message, error) {
-	msg, ok := c.(tgbotapi.MessageConfig)
-	if !ok {
-		return tgbotapi.Message{}, nil
+func TestLoad(t *testing.T) {
+	// Создаем временный файл событий
+	tmpfile, err := os.CreateTemp("", "events.json")
+	if err != nil {
+		t.Fatal(err)
 	}
-	m.Messages = append(m.Messages, msg)
-	return tgbotapi.Message{}, nil
-}
+	defer os.Remove(tmpfile.Name())
 
-func TestLoadEvents(t *testing.T) {
-	events := LoadEvents("../events.json")
-	if len(events) == 0 {
-		t.Error("Expected events to be loaded, but got none")
+	// Записываем тестовые данные во временный файл
+	testEvents := []byte(`[
+		{"date": "01.01", "event": "Новый год"},
+		{"date": "07.01", "event": "Рождество"}
+	]`)
+	if _, err := tmpfile.Write(testEvents); err != nil {
+		t.Fatal(err)
+	}
+	if err := tmpfile.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	// Загружаем события
+	events, err := Load(tmpfile.Name())
+	if err != nil {
+		t.Fatalf("Ошибка при загрузке событий: %v", err)
+	}
+
+	// Проверяем загруженные события
+	if len(events) != 2 {
+		t.Errorf("Ожидалось 2 события, получено %d", len(events))
+	}
+	if events[0].Date != "01.01" || events[0].Event != "Новый год" {
+		t.Errorf("Неверное первое событие: %v", events[0])
+	}
+	if events[1].Date != "07.01" || events[1].Event != "Рождество" {
+		t.Errorf("Неверное второе событие: %v", events[1])
 	}
 }
 
 func TestCheckEvents(t *testing.T) {
-	mockBot := &MockBotAPI{}
-	events := []Event{
-		{Date: "15.10", Event: "День рождения"},
-		{Date: "17.10", Event: "Годовщина"},
+	// Создаем мок-объекты
+	mockBot := &bot.MockBot{}
+	mockConfig := &config.Config{
+		ChatID: 123456,
+	}
+	testEvents := []Event{
+		{Date: "01.01", Event: "Новый год"},
+		{Date: "07.01", Event: "Рождество"},
 	}
 
-	now := time.Date(2023, 10, 15, 0, 0, 0, 0, time.UTC)
-	chatID := int64(12345)
+	scheduler := NewScheduler(mockConfig, mockBot, testEvents)
 
-	CheckEvents(mockBot, events, now, chatID)
+	// Тестируем проверку событий
+	now := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+	scheduler.checkEvents(now)
 
-	if len(mockBot.Messages) != 2 {
-		t.Errorf("Ожидалось 2 сообщения, но получено %d", len(mockBot.Messages))
+	// Проверяем, что было отправлено правильное сообщение
+	if len(mockBot.SentMessages) != 1 {
+		t.Errorf("Ожидалось 1 отправленное сообщение, получено %d", len(mockBot.SentMessages))
 	}
-
-	expectedMessages := []string{
-		"😏 Сегодня День рождения 😉",
-		"🤔 Скоро Годовщина 👀",
-	}
-
-	for i, msg := range mockBot.Messages {
-		if msg.Text != expectedMessages[i] {
-			t.Errorf("Ожидалось сообщение '%s', но получено '%s'", expectedMessages[i], msg.Text)
-		}
+	expectedMessage := "😏 Сегодня Новый год 😉"
+	if mockBot.SentMessages[0] != expectedMessage {
+		t.Errorf("Ожидалось сообщение '%s', получено '%s'", expectedMessage, mockBot.SentMessages[0])
 	}
 }

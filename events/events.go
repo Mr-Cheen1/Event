@@ -7,7 +7,8 @@ import (
 	"os"
 	"time"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/Mr-Cheen1/Event/bot"
+	"github.com/Mr-Cheen1/Event/config"
 )
 
 type Event struct {
@@ -15,26 +16,65 @@ type Event struct {
 	Event string `json:"event"`
 }
 
-type BotAPI interface {
-	Send(c tgbotapi.Chattable) (tgbotapi.Message, error)
-}
-
-func LoadEvents(filename string) []Event {
+func Load(filename string) ([]Event, error) {
 	data, err := os.ReadFile(filename)
 	if err != nil {
-		log.Fatalf("Ошибка при чтении файла событий: %v", err)
+		return nil, err
 	}
 
 	var events []Event
 	if err := json.Unmarshal(data, &events); err != nil {
-		log.Fatalf("Ошибка при парсинге файла событий: %v", err)
+		return nil, err
 	}
 
-	return events
+	return events, nil
 }
 
-func CheckEvents(bot BotAPI, events []Event, now time.Time, chatID int64) {
-	for _, event := range events {
+type Scheduler struct {
+	config *config.Config
+	bot    bot.API
+	events []Event
+}
+
+func NewScheduler(cfg *config.Config, bot bot.API, events []Event) *Scheduler {
+	return &Scheduler{
+		config: cfg,
+		bot:    bot,
+		events: events,
+	}
+}
+
+func (s *Scheduler) Start() {
+	loc, err := time.LoadLocation(s.config.Timezone)
+	if err != nil {
+		log.Fatalf("Ошибка при загрузке часового пояса: %v", err)
+	}
+
+	for {
+		now := time.Now().In(loc)
+		notificationTime, err := time.ParseInLocation("15:04", s.config.NotificationTime, loc)
+		if err != nil {
+			log.Printf("Ошибка при парсинге времени уведомления: %v", err)
+			time.Sleep(1 * time.Minute)
+			continue
+		}
+		notificationTime = time.Date(
+			now.Year(), now.Month(), now.Day(),
+			notificationTime.Hour(), notificationTime.Minute(),
+			0, 0, loc,
+		)
+
+		if now.Equal(notificationTime) || now.After(notificationTime) && now.Before(notificationTime.Add(1*time.Minute)) {
+			s.checkEvents(now)
+			time.Sleep(24 * time.Hour)
+		} else {
+			time.Sleep(time.Until(notificationTime))
+		}
+	}
+}
+
+func (s *Scheduler) checkEvents(now time.Time) {
+	for _, event := range s.events {
 		eventDate, err := time.Parse("02.01", event.Date)
 		if err != nil {
 			log.Printf("Ошибка при парсинге даты события: %v", err)
@@ -42,7 +82,6 @@ func CheckEvents(bot BotAPI, events []Event, now time.Time, chatID int64) {
 		}
 		eventDate = time.Date(now.Year(), eventDate.Month(), eventDate.Day(), 0, 0, 0, 0, now.Location())
 
-		// Рассчитываем количество дней до события
 		todayDate := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 		daysUntilEvent := int(eventDate.Sub(todayDate).Hours() / 24)
 
@@ -57,8 +96,7 @@ func CheckEvents(bot BotAPI, events []Event, now time.Time, chatID int64) {
 		}
 
 		if message != "" {
-			msg := tgbotapi.NewMessage(chatID, message)
-			if _, err := bot.Send(msg); err != nil {
+			if err := s.bot.SendMessage(s.config.ChatID, message); err != nil {
 				log.Printf("Ошибка при отправке сообщения: %v", err)
 			}
 		}
