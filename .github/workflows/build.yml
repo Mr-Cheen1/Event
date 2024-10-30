@@ -1,0 +1,33 @@
+name: Build binary
+
+# Запуск при пуше в любую ветку.
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Установка Go версии 1.22.
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.22
+
+      # Получение исходного кода из репозитория.
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      # Установка зависимостей.
+      - name: Install Dependencies
+        run: go mod tidy
+        working-directory: ./
+
+      # Сборка бинарного файла.
+      - name: Build binary
+        run: |
+          go build -o ../bin/service .
