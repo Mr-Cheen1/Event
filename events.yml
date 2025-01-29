@@ -1,0 +1,21 @@
+# Список праздников и событий
+- event: День металлурга
+  rule:
+    day_of_week: 7    # воскресенье
+    week_of_month: 3  # третья неделя
+    month: 7         # июль
+
+- event: День программиста
+  rule:
+    day_of_year: 256  # 256-й день года
+
+- event: День шахтера
+  rule:
+    day_of_week: 7    # воскресенье
+    week_of_month: 5  # последняя неделя
+    month: 8         # август
+
+- event: Новый год
+  rule:
+    day_of_month: 28
+    month: 12 
