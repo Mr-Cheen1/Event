@@ -19,7 +19,7 @@ func main() {
 		log.Fatalf("Ошибка при создании бота: %v", err)
 	}
 
-	eventsList, err := events.Load(cfg.EventsFile)
+	eventsList, err := events.Load("events.yml")
 	if err != nil {
 		log.Fatalf("Ошибка при загрузке событий: %v", err)
 	}
