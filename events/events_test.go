@@ -137,7 +137,7 @@ func TestGetNextEventDate(t *testing.T) {
 			event: Event{
 				Event: "День металлурга",
 				Rule: EventRule{
-					DayOfWeek:   intPtr(0),
+					DayOfWeek:   intPtr(7), // воскресенье в русской системе
 					Month:       intPtr(7),
 					WeekOfMonth: intPtr(3),
 				},
@@ -171,7 +171,7 @@ func TestGetNextEventDate(t *testing.T) {
 }
 
 func TestLoad(t *testing.T) {
-	events, err := Load("../events.json")
+	events, err := Load("../events.yml")
 	if err != nil {
 		t.Fatalf("Failed to load events: %v", err)
 	}

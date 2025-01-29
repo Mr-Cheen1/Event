@@ -11,7 +11,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// convertToGoWeekday преобразует день недели из российского формата (1-7) в формат Go (0-6)
+// convertToGoWeekday преобразует день недели из российского формата (1-7) в формат Go (0-6).
 func convertToGoWeekday(russianWeekday int) int {
 	if russianWeekday == 7 {
 		return 0 // воскресенье
@@ -19,7 +19,7 @@ func convertToGoWeekday(russianWeekday int) int {
 	return russianWeekday
 }
 
-// convertFromGoWeekday преобразует день недели из формата Go (0-6) в российский формат (1-7)
+// convertFromGoWeekday преобразует день недели из формата Go (0-6) в российский формат (1-7).
 func convertFromGoWeekday(goWeekday int) int {
 	if goWeekday == 0 {
 		return 7 // воскресенье
