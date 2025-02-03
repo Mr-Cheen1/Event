@@ -41,14 +41,17 @@ RUN chmod +x /app/main
 # Указываем порт, который будет использовать приложение
 EXPOSE 8080
 
-# Устанавливаем переменные окружения
-ENV BOT_TOKEN=""
-ENV CHAT_ID=""
-
-# Запускаем приложение с выводом всей информации
-CMD echo "=== Environment ===" && \
-    env | grep -E "BOT_TOKEN|CHAT_ID" && \
-    echo "=== Files ===" && \
-    ls -la && \
-    echo "=== Starting ===" && \
+# Запускаем приложение с проверкой переменных окружения
+CMD if [ -z "$BOT_TOKEN" ]; then \
+      echo "Error: BOT_TOKEN is not set"; \
+      exit 1; \
+    fi && \
+    if [ -z "$CHAT_ID" ]; then \
+      echo "Error: CHAT_ID is not set"; \
+      exit 1; \
+    fi && \
+    echo "Environment variables are set:" && \
+    echo "BOT_TOKEN length: ${#BOT_TOKEN}" && \
+    echo "CHAT_ID: $CHAT_ID" && \
+    echo "Starting application..." && \
     /app/main 
