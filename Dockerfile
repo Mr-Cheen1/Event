@@ -36,5 +36,10 @@ COPY --from=builder /app/events.yml .
 # Указываем порт, который будет использовать приложение
 EXPOSE 8080
 
-# Запуск приложения
-CMD ["./main"] 
+# Проверяем окружение и запускаем приложение
+CMD echo "=== Directory contents ===" && \
+    ls -la && \
+    echo "=== Environment variables ===" && \
+    env && \
+    echo "=== Starting application ===" && \
+    ./main 
