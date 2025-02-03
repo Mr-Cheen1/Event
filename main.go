@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/Mr-Cheen1/Event/bot"
 	"github.com/Mr-Cheen1/Event/config"
@@ -25,5 +26,20 @@ func main() {
 	}
 
 	scheduler := events.NewScheduler(cfg, bot, eventsList)
+
+	// Запускаем HTTP сервер для проверки работоспособности
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Bot is running"))
+	})
+
+	// Запускаем HTTP сервер в отдельной горутине
+	go func() {
+		if err := http.ListenAndServe(":8080", nil); err != nil {
+			log.Printf("Ошибка HTTP сервера: %v", err)
+		}
+	}()
+
+	// Запускаем планировщик
 	scheduler.Start()
 }

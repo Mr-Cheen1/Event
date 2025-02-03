@@ -22,8 +22,10 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o main .
 # Финальный этап
 FROM alpine:latest
 
-# Установка tzdata для поддержки часовых поясов
-RUN apk add --no-cache tzdata
+# Установка и настройка часовых поясов
+RUN apk add --no-cache tzdata && \
+    cp /usr/share/zoneinfo/Europe/Samara /etc/localtime && \
+    echo "Europe/Samara" > /etc/timezone
 
 # Создание рабочей директории
 WORKDIR /app
