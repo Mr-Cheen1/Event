@@ -12,11 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      # Установка Go версии 1.22.
+      # Установка Go версии 1.21.
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: 1.22
+          go-version: 1.21
 
       # Получение исходного кода из репозитория.
       - name: Check out code
@@ -25,9 +25,12 @@ jobs:
       # Установка зависимостей.
       - name: Install Dependencies
         run: go mod tidy
-        working-directory: ./
 
       # Сборка бинарного файла.
       - name: Build binary
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
         run: |
-          go build -o ../bin/service .
+          mkdir -p bin
+          go build -o bin/event-bot .

@@ -21,11 +21,10 @@ type Config struct {
 }
 
 func Load() (*Config, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return nil, fmt.Errorf("ошибка при загрузке .env файла: %w", err)
-	}
+	// Пробуем загрузить .env файл, но не возвращаем ошибку если его нет
+	_ = godotenv.Load()
 
+	// Получаем значения из переменных окружения
 	chatIDStr := os.Getenv("CHAT_ID")
 	if chatIDStr == "" {
 		return nil, fmt.Errorf("CHAT_ID не задан в переменных окружения")
@@ -44,7 +43,7 @@ func Load() (*Config, error) {
 	cfg := &Config{
 		BotToken:   botToken,
 		ChatID:     chatID,
-		EventsFile: "events.json",
+		EventsFile: "events.yml",
 	}
 
 	data, err := os.ReadFile(ConfigFile)

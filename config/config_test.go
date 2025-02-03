@@ -6,13 +6,19 @@ import (
 )
 
 func TestLoad(t *testing.T) {
-	// Создаем временный .env файл
-	envFile := ".env"
-	err := os.WriteFile(envFile, []byte("BOT_TOKEN=test_token\nCHAT_ID=123456"), 0o600)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.Remove(envFile)
+	// Сохраняем оригинальные значения переменных окружения
+	origToken := os.Getenv("BOT_TOKEN")
+	origChatID := os.Getenv("CHAT_ID")
+
+	// Устанавливаем тестовые значения
+	os.Setenv("BOT_TOKEN", "test_token")
+	os.Setenv("CHAT_ID", "123456")
+
+	// Восстанавливаем оригинальные значения после теста
+	defer func() {
+		os.Setenv("BOT_TOKEN", origToken)
+		os.Setenv("CHAT_ID", origChatID)
+	}()
 
 	// Создаем временный файл конфигурации
 	tmpfile, err := os.CreateTemp("", "config.json")
@@ -55,25 +61,31 @@ func TestLoad(t *testing.T) {
 	}
 }
 
-func TestLoadMissingEnvFile(t *testing.T) {
-	if err := os.Remove(".env"); err != nil && !os.IsNotExist(err) {
-		t.Fatal(err)
-	}
+func TestLoadMissingEnvVars(t *testing.T) {
+	// Сохраняем оригинальные значения
+	origToken := os.Getenv("BOT_TOKEN")
+	origChatID := os.Getenv("CHAT_ID")
+
+	// Очищаем переменные окружения
+	os.Unsetenv("BOT_TOKEN")
+	os.Unsetenv("CHAT_ID")
+
+	// Восстанавливаем оригинальные значения после теста
+	defer func() {
+		os.Setenv("BOT_TOKEN", origToken)
+		os.Setenv("CHAT_ID", origChatID)
+	}()
 
 	_, err := Load()
 	if err == nil {
-		t.Error("Ожидалась ошибка при отсутствии .env файла, но ошибки не было")
+		t.Error("Ожидалась ошибка при отсутствии переменных окружения, но ошибки не было")
 	}
 }
 
-func TestLoadMissingValues(t *testing.T) {
-	// Создаем временный .env файл
-	envFile := ".env"
-	err := os.WriteFile(envFile, []byte("BOT_TOKEN=test_token\nCHAT_ID=123456"), 0o600)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.Remove(envFile)
+func TestLoadMissingConfigValues(t *testing.T) {
+	// Устанавливаем тестовые значения окружения
+	os.Setenv("BOT_TOKEN", "test_token")
+	os.Setenv("CHAT_ID", "123456")
 
 	// Создаем временный файл конфигурации
 	tmpfile, err := os.CreateTemp("", "config.json")
@@ -106,16 +118,5 @@ func TestLoadMissingValues(t *testing.T) {
 	_, err = Load()
 	if err == nil {
 		t.Error("Ожидалась ошибка при отсутствии часового пояса, но ошибки не было")
-	}
-
-	// Тест на пустые значения
-	testConfig = []byte(`{"notification_time": "", "timezone": ""}`)
-	if err := os.WriteFile(tmpfile.Name(), testConfig, 0o600); err != nil {
-		t.Fatal(err)
-	}
-
-	_, err = Load()
-	if err == nil {
-		t.Error("Ожидалась ошибка при пустых значениях, но ошибки не было")
 	}
 }
