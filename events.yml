@@ -1,21 +1,165 @@
 # Список праздников и событий
-- event: День металлурга
+- event: "День шахтера"
   rule:
     day_of_week: 7    # воскресенье
-    week_of_month: 3  # третья неделя
-    month: 7         # июль
-
-- event: День программиста
-  rule:
-    day_of_year: 256  # 256-й день года
-
-- event: День шахтера
-  rule:
-    day_of_week: 7    # воскресенье
-    week_of_month: 5  # последняя неделя
     month: 8         # август
+    week_of_month: 5 # последняя неделя
 
-- event: Новый год
+- event: "День строителя"
+  rule:
+    day_of_week: 7    # воскресенье
+    month: 8         # август
+    week_of_month: 2 # вторая неделя
+
+- event: "День учителя"
+  rule:
+    day_of_month: 5
+    month: 10
+
+- event: "День программиста"
+  rule:
+    day_of_year: 256
+
+- event: "День металлурга"
+  rule:
+    day_of_week: 7    # воскресенье
+    month: 7         # июль
+    week_of_month: 3 # третья неделя
+
+- event: "День энергетика"
+  rule:
+    day_of_month: 22
+    month: 12
+
+- event: "День матери"
+  rule:
+    day_of_week: 7    # воскресенье
+    month: 11        # ноябрь
+    week_of_month: 5 # последняя неделя
+
+- event: "День отца"
+  rule:
+    day_of_week: 7    # воскресенье
+    month: 10        # октябрь
+    week_of_month: 3 # третья неделя
+
+- event: "Татьянин день"
+  rule:
+    day_of_month: 25
+    month: 1
+
+- event: "Новый год"
+  rule:
+    day_of_month: 31
+    month: 12
+
+- event: "Международный женский день"
+  rule:
+    day_of_month: 8
+    month: 3
+
+- event: "День защитника Отечества"
+  rule:
+    day_of_month: 23
+    month: 2
+
+# Дни рождения
+- event: "День рождения тёти Люды"
+  rule:
+    day_of_month: 30
+    month: 1
+
+- event: "День рождения папы"
+  rule:
+    day_of_month: 2
+    month: 2
+
+- event: "День рождения Оксаны"
+  rule:
+    day_of_month: 4
+    month: 2
+
+- event: "День рождения Ярослава"
+  rule:
+    day_of_month: 11
+    month: 4
+
+- event: "День рождения Полины"
+  rule:
+    day_of_month: 4
+    month: 5
+
+- event: "День рождения дедушки"
+  rule:
+    day_of_month: 8
+    month: 5
+
+- event: "День рождения Олеси"
+  rule:
+    day_of_month: 18
+    month: 5
+
+- event: "День рождения Вадима"
+  rule:
+    day_of_month: 5
+    month: 6
+
+- event: "День рождения тёти Наташи"
+  rule:
+    day_of_month: 11
+    month: 6
+
+- event: "День рождения тёти Вали"
+  rule:
+    day_of_month: 20
+    month: 6
+
+- event: "День рождения мамы"
   rule:
     day_of_month: 28
+    month: 7
+
+- event: "День рождения бабушки"
+  rule:
+    day_of_month: 10
+    month: 8
+
+- event: "День рождения Ефима"
+  rule:
+    day_of_month: 21
+    month: 8
+
+- event: "День рождения дяди Вити"
+  rule:
+    day_of_month: 14
+    month: 10
+
+- event: "День рождения Стёпы"
+  rule:
+    day_of_month: 19
+    month: 10
+
+- event: "День рождения Ани"
+  rule:
+    day_of_month: 25
+    month: 10
+
+- event: "День рождения Димы"
+  rule:
+    day_of_month: 11
+    month: 11
+
+- event: "Годовщина Ани и Вадима"
+  rule:
+    day_of_month: 15
+    month: 11
+
+- event: "День рождения Гриши и Егора"
+  rule:
+    day_of_month: 1
+    month: 12
+
+- event: "Годовщина мамы и папы"
+  rule:
+    day_of_month: 8
     month: 12 
