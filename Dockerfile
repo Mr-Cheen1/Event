@@ -30,6 +30,12 @@ COPY --from=builder /app/main .
 COPY --from=builder /app/config.json .
 COPY --from=builder /app/events.yml .
 
+# Определение переменных окружения
+ARG BOT_TOKEN
+ARG CHAT_ID
+ENV BOT_TOKEN=$BOT_TOKEN
+ENV CHAT_ID=$CHAT_ID
+
 # Указываем порт, который будет использовать приложение
 EXPOSE 8080
 
