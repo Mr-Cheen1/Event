@@ -22,6 +22,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o main .
 # Финальный этап
 FROM alpine:latest
 
+# Установка tzdata для поддержки часовых поясов
+RUN apk add --no-cache tzdata
+
 # Создание рабочей директории
 WORKDIR /app
 
