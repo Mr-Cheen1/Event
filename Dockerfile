@@ -22,9 +22,6 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o main .
 # Финальный этап
 FROM alpine:latest
 
-# Установка часового пояса
-RUN apk add --no-cache tzdata
-
 # Создание рабочей директории
 WORKDIR /app
 
@@ -33,8 +30,8 @@ COPY --from=builder /app/main .
 COPY --from=builder /app/config.json .
 COPY --from=builder /app/events.yml .
 
-# Установка переменных окружения по умолчанию
-ENV TZ=Europe/Moscow
+# Указываем порт, который будет использовать приложение
+EXPOSE 8080
 
 # Запуск приложения
 CMD ["./main"] 
