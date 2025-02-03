@@ -35,13 +35,19 @@ COPY --from=builder /app/main .
 COPY --from=builder /app/config.json .
 COPY --from=builder /app/events.yml .
 
+# Даем права на выполнение
+RUN chmod +x /app/main
+
 # Указываем порт, который будет использовать приложение
 EXPOSE 8080
 
-# Проверяем окружение и запускаем приложение
-CMD echo "=== Directory contents ===" && \
+# Запускаем приложение с выводом всей информации
+CMD set -x && \
+    pwd && \
     ls -la && \
-    echo "=== Environment variables ===" && \
-    env && \
-    echo "=== Starting application ===" && \
-    ./main 
+    cat config.json && \
+    cat events.yml && \
+    echo "BOT_TOKEN=$BOT_TOKEN" && \
+    echo "CHAT_ID=$CHAT_ID" && \
+    echo "Starting application..." && \
+    /app/main 
