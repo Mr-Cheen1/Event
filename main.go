@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+	log.Println("Starting application...")
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatalf("Ошибка при загрузке конфигурации: %v", err)
@@ -36,5 +37,6 @@ func main() {
 		fmt.Fprint(w, "OK")
 	})
 
-	// http.ListenAndServe("0.0.0.0:8080", nil)
+	log.Println("Server started on port 8080")
+	http.ListenAndServe("0.0.0.0:8080", nil)
 }
