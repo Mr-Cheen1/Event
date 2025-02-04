@@ -9,7 +9,8 @@ FROM alpine:3.20
 RUN apk add --no-cache curl
 WORKDIR /app
 COPY --from=builder /app/myapp .
-COPY config.json /app/config.json
+COPY --from=builder /app/config.json .
+COPY --from=builder /app/events.yml .
 RUN chmod +x /app/myapp
 
 EXPOSE 8080

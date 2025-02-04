@@ -36,6 +36,9 @@ func main() {
 	}()
 	scheduler.Start()
 
+	// Блокировка основного потока
+	select {}
+
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "OK")
 	})
