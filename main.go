@@ -31,17 +31,16 @@ func main() {
 
 	scheduler := events.NewScheduler(cfg, bot, eventsList)
 
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "OK")
+	})
+
 	go func() {
+		log.Println("Server started on port 8080")
 		http.ListenAndServe("0.0.0.0:8080", nil)
 	}()
 	scheduler.Start()
 
 	// Блокировка основного потока
 	select {}
-
-	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, "OK")
-	})
-
-	log.Println("Server started on port 8080")
 }
