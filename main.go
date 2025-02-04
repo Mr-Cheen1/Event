@@ -31,6 +31,9 @@ func main() {
 
 	scheduler := events.NewScheduler(cfg, bot, eventsList)
 
+	go func() {
+		http.ListenAndServe("0.0.0.0:8080", nil)
+	}()
 	scheduler.Start()
 
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -38,5 +41,4 @@ func main() {
 	})
 
 	log.Println("Server started on port 8080")
-	http.ListenAndServe("0.0.0.0:8080", nil)
 }
