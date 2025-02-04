@@ -14,6 +14,12 @@ import (
 
 func main() {
 	log.Println("Starting application...")
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("Runtime panic: %v", r)
+		}
+	}()
+
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatalf("Ошибка при загрузке конфигурации: %v", err)
@@ -36,8 +42,10 @@ func main() {
 	})
 
 	go func() {
-		log.Println("Server started on port 8080")
-		http.ListenAndServe("0.0.0.0:8080", nil)
+		log.Println("Starting HTTP server on :8080")
+		if err := http.ListenAndServe("0.0.0.0:8080", nil); err != nil {
+			log.Fatalf("Failed to start server: %v", err)
+		}
 	}()
 	scheduler.Start()
 

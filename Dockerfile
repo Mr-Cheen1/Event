@@ -6,7 +6,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /app/myapp main.go
 
 # Запускаемый контейнер
 FROM alpine:3.20
-RUN apk add --no-cache curl
+RUN apk add --no-cache curl tzdata ca-certificates
 WORKDIR /app
 COPY --from=builder /app/myapp .
 COPY --from=builder /app/config.json .
