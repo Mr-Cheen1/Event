@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"net/http"
+
 	// "net/http" // Удалено, так как HTTP сервер не используется
 
 	"github.com/Mr-Cheen1/Event/bot"
@@ -28,4 +31,10 @@ func main() {
 	scheduler := events.NewScheduler(cfg, bot, eventsList)
 
 	scheduler.Start()
+
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "OK")
+	})
+
+	// http.ListenAndServe("0.0.0.0:8080", nil)
 }

@@ -9,3 +9,8 @@ services:
       - "8080:8080"  # Пробрасываем порт приложения
     volumes:
       - ./config.json:/app/config.json  # Монтируем конфиг 
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
