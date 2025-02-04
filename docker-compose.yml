@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: my-go-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"  # Пробрасываем порт приложения
+    volumes:
+      - ./config.json:/app/config.json  # Монтируем конфиг 
