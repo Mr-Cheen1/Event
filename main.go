@@ -13,8 +13,26 @@ import (
 	"github.com/Mr-Cheen1/Event/events"
 )
 
+func listFiles(dir string) []string {
+	files, err := os.ReadDir(dir)
+	if err != nil {
+		log.Printf("Error listing directory: %v", err)
+		return nil
+	}
+
+	var names []string
+	for _, file := range files {
+		names = append(names, file.Name())
+	}
+	return names
+}
+
 func main() {
 	log.Println("Starting application...")
+	dir, _ := os.Getwd()
+	log.Printf("Working directory: %s", dir)
+	log.Printf("Directory contents: %v", listFiles("."))
+
 	defer func() {
 		if r := recover(); r != nil {
 			log.Printf("Runtime panic: %v", r)
@@ -27,6 +45,11 @@ func main() {
 	}
 	if _, err := os.Stat("events.yml"); err != nil {
 		log.Fatalf("events.yml not found: %v", err)
+	}
+
+	// Проверка прав на выполнение
+	if info, err := os.Stat("./main"); err == nil {
+		log.Printf("Executable permissions: %v", info.Mode().Perm()&0111 != 0)
 	}
 
 	cfg, err := config.Load()
