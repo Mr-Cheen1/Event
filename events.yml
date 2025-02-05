@@ -163,3 +163,8 @@
   rule:
     day_of_month: 8
     month: 12 
+
+- event: "День рождения ТЕСТ"
+  rule:
+    day_of_month: 5
+    month: 2
