@@ -1,37 +1,19 @@
-# Этап сборки
-FROM golang:1.21-alpine AS builder
-
-# Установка необходимых инструментов для сборки
-RUN apk add --no-cache git
-
-# Установка рабочей директории
-WORKDIR /app
-
-# Копирование файлов зависимостей
-COPY go.mod go.sum ./
-
-# Загрузка зависимостей
-RUN go mod download
-
-# Копирование исходного кода
-COPY . .
-
 # Сборка приложения
+FROM --platform=linux/amd64 golang:1.21-alpine AS builder
+WORKDIR /app
+COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o main .
 
-# Финальный этап
-FROM alpine:latest
-
-# Создание рабочей директории
+# Запускаемый контейнер
+FROM alpine:3.20
+RUN apk add --no-cache curl tzdata ca-certificates
 WORKDIR /app
-
-# Копирование собранного приложения из этапа сборки
 COPY --from=builder /app/main .
 COPY --from=builder /app/config.json .
 COPY --from=builder /app/events.yml .
+RUN chmod +x /app/main
+RUN chown -R nobody:nobody /app
+USER nobody
 
-# Указываем порт, который будет использовать приложение
 EXPOSE 8080
-
-# Запуск приложения
 CMD ["./main"] 
