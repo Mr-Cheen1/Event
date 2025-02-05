@@ -34,6 +34,21 @@ func main() {
 	log.Printf("Directory contents: %v", listFiles("."))
 
 	// Проверка переменных окружения
+	log.Printf("BOT_TOKEN: %s", os.Getenv("BOT_TOKEN"))
+	log.Printf("CHAT_ID: %s", os.Getenv("CHAT_ID"))
+
+	// Проверка прав на файлы
+	if info, err := os.Stat("./main"); err == nil {
+		log.Printf("Main file permissions: %v", info.Mode())
+	}
+	if info, err := os.Stat("config.json"); err == nil {
+		log.Printf("Config file permissions: %v", info.Mode())
+	}
+	if info, err := os.Stat("events.yml"); err == nil {
+		log.Printf("Events file permissions: %v", info.Mode())
+	}
+
+	// Проверка переменных окружения
 	if os.Getenv("BOT_TOKEN") == "" {
 		log.Fatal("BOT_TOKEN environment variable is not set")
 	}

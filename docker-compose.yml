@@ -5,6 +5,7 @@ services:
     build: .
     container_name: my-go-app
     restart: unless-stopped
+    user: nobody
     ports:
       - "8080:8080"  # Пробрасываем порт приложения
     logging:
@@ -22,3 +23,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro

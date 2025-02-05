@@ -12,6 +12,8 @@ COPY --from=builder /app/main .
 COPY --from=builder /app/config.json .
 COPY --from=builder /app/events.yml .
 RUN chmod +x /app/main
+RUN chown -R nobody:nobody /app
+USER nobody
 
 EXPOSE 8080
 CMD ["./main"] 
