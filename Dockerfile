@@ -14,4 +14,4 @@ COPY --from=builder /app/events.yml .
 RUN chmod +x /app/myapp
 
 EXPOSE 8080
-ENTRYPOINT ["/app/myapp"] 
+ENTRYPOINT ["./myapp"] 

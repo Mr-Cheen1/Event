@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	// "net/http" // Удалено, так как HTTP сервер не используется
 
@@ -20,10 +21,20 @@ func main() {
 		}
 	}()
 
+	// Проверка наличия файлов
+	if _, err := os.Stat("config.json"); err != nil {
+		log.Fatalf("config.json not found: %v", err)
+	}
+	if _, err := os.Stat("events.yml"); err != nil {
+		log.Fatalf("events.yml not found: %v", err)
+	}
+
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatalf("Ошибка при загрузке конфигурации: %v", err)
 	}
+
+	log.Printf("Config loaded successfully: %+v", cfg)
 
 	bot, err := bot.New(cfg.BotToken)
 	if err != nil {
@@ -48,6 +59,7 @@ func main() {
 		}
 	}()
 	scheduler.Start()
+	log.Println("Scheduler started")
 
 	// Блокировка основного потока
 	select {}
