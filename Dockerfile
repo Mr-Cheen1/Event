@@ -2,7 +2,7 @@
 FROM --platform=linux/amd64 golang:1.21-alpine AS builder
 WORKDIR /app
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -o /app/main main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o main .
 
 # Запускаемый контейнер
 FROM alpine:3.20

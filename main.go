@@ -33,6 +33,14 @@ func main() {
 	log.Printf("Working directory: %s", dir)
 	log.Printf("Directory contents: %v", listFiles("."))
 
+	// Проверка переменных окружения
+	if os.Getenv("BOT_TOKEN") == "" {
+		log.Fatal("BOT_TOKEN environment variable is not set")
+	}
+	if os.Getenv("CHAT_ID") == "" {
+		log.Fatal("CHAT_ID environment variable is not set")
+	}
+
 	defer func() {
 		if r := recover(); r != nil {
 			log.Printf("Runtime panic: %v", r)

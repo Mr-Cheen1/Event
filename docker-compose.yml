@@ -16,6 +16,7 @@ services:
       - BOT_TOKEN=${BOT_TOKEN}
       - CHAT_ID=${CHAT_ID}
       - GODEBUG=netdns=go
+      - TZ=Europe/Moscow
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 30s
