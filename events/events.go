@@ -118,7 +118,7 @@ func (s *Scheduler) Start() {
 	}()
 }
 
-// checkEventsWithoutNotify проверяет события и выводит их в лог, но не отправляет уведомления
+// checkEventsWithoutNotify проверяет события и выводит их в лог, но не отправляет уведомления.
 func (s *Scheduler) checkEventsWithoutNotify(now time.Time) {
 	todayDate := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 
