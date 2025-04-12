@@ -1,4 +1,5 @@
 # 📅 Event Bot
+[![Linting](https://github.com/Mr-Cheen1/Event/actions/workflows/lint.yml/badge.svg)](https://github.com/Mr-Cheen1/Event/actions/workflows/lint.yml) [![Testing](https://github.com/Mr-Cheen1/Event/actions/workflows/test.yml/badge.svg)](https://github.com/Mr-Cheen1/Event/actions/workflows/test.yml) [![Build binary](https://github.com/Mr-Cheen1/Event/actions/workflows/build.yml/badge.svg)](https://github.com/Mr-Cheen1/Event/actions/workflows/build.yml)
 
 Telegram бот для отслеживания важных дат и событий с поддержкой различных типов праздников, написанный на Go.
 
