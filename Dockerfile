@@ -22,6 +22,12 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o main .
 # Финальный этап
 FROM alpine:latest
 
+# Установка пакета часовых поясов
+RUN apk add --no-cache tzdata
+
+# Настройка часового пояса
+ENV TZ=Europe/Moscow
+
 # Создание рабочей директории
 WORKDIR /app
 
@@ -29,6 +35,7 @@ WORKDIR /app
 COPY --from=builder /app/main .
 COPY --from=builder /app/config.json .
 COPY --from=builder /app/events.yml .
+COPY --from=builder /app/.env .
 
 # Указываем порт, который будет использовать приложение
 EXPOSE 8080

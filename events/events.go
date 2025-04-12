@@ -74,27 +74,75 @@ func (s *Scheduler) Start() {
 		log.Fatalf("Ошибка при загрузке часового пояса: %v", err)
 	}
 
-	for {
-		now := time.Now().In(loc)
-		notificationTime, err := time.ParseInLocation("15:04", s.config.NotificationTime, loc)
-		if err != nil {
-			log.Printf("Ошибка при парсинге времени уведомления: %v", err)
-			time.Sleep(1 * time.Minute)
-			continue
-		}
-		notificationTime = time.Date(
-			now.Year(), now.Month(), now.Day(),
-			notificationTime.Hour(), notificationTime.Minute(),
-			0, 0, loc,
-		)
+	// Запускаем планировщик в отдельной горутине
+	go func() {
+		log.Printf("🕒 Планировщик запущен в фоновом режиме, время уведомлений: %s", s.config.NotificationTime)
 
-		if now.Equal(notificationTime) || now.After(notificationTime) && now.Before(notificationTime.Add(1*time.Minute)) {
-			s.checkEvents(now)
-			time.Sleep(24 * time.Hour)
-		} else {
-			time.Sleep(time.Until(notificationTime))
+		// Выполняем начальную проверку событий и выводим информацию о ближайших событиях
+		now := time.Now().In(loc)
+		s.checkEventsWithoutNotify(now)
+
+		for {
+			now := time.Now().In(loc)
+			notificationTime, err := time.ParseInLocation("15:04", s.config.NotificationTime, loc)
+			if err != nil {
+				log.Printf("Ошибка при парсинге времени уведомления: %v", err)
+				time.Sleep(1 * time.Minute)
+				continue
+			}
+			notificationTime = time.Date(
+				now.Year(), now.Month(), now.Day(),
+				notificationTime.Hour(), notificationTime.Minute(),
+				0, 0, loc,
+			)
+
+			if now.Equal(notificationTime) || now.After(notificationTime) && now.Before(notificationTime.Add(1*time.Minute)) {
+				s.checkEvents(now)
+				time.Sleep(24 * time.Hour)
+			} else {
+				// Рассчитываем время до следующей проверки
+				timeUntilNextCheck := time.Until(notificationTime)
+				if timeUntilNextCheck < 0 {
+					// Если время уже прошло, планируем на завтра
+					notificationTime = notificationTime.AddDate(0, 0, 1)
+					timeUntilNextCheck = time.Until(notificationTime)
+				}
+
+				log.Printf("⏳ Следующая проверка событий через %v (%s)",
+					timeUntilNextCheck.Round(time.Minute),
+					notificationTime.Format("2006-01-02 15:04:05"))
+
+				time.Sleep(timeUntilNextCheck)
+			}
+		}
+	}()
+}
+
+// checkEventsWithoutNotify проверяет события и выводит их в лог, но не отправляет уведомления.
+func (s *Scheduler) checkEventsWithoutNotify(now time.Time) {
+	todayDate := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+
+	log.Printf("=== Предварительная проверка событий [%s] ===", now.Format("2006-01-02 15:04:05"))
+
+	hasEvents := false
+	for _, event := range s.events {
+		eventDate := s.getNextEventDate(event, todayDate)
+		daysUntilEvent := int(eventDate.Sub(todayDate).Hours() / 24)
+
+		// Логируем только ближайшие события (в пределах недели)
+		if daysUntilEvent <= 7 {
+			hasEvents = true
+			log.Printf("🗓 %s: %s (через %d дн.)",
+				eventDate.Format("02.01.2006"),
+				event.Event,
+				daysUntilEvent)
 		}
 	}
+
+	if !hasEvents {
+		log.Printf("В ближайшие 7 дней событий нет")
+	}
+	log.Printf("=== Предварительная проверка завершена ===\n")
 }
 
 func (s *Scheduler) isEventToday(event Event, now time.Time) bool {
