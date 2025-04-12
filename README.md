@@ -58,6 +58,22 @@ CHAT_ID=your_chat_id
 }
 ```
 
+`events.yml`:
+
+```yaml
+# День металлурга (третье воскресенье июля)
+- event: День металлурга
+  rule:
+    day_of_week: 7    # воскресенье
+    week_of_month: 3  # третья неделя
+    month: 7         # июль
+
+# День программиста (256-й день года)
+- event: День программиста
+  rule:
+    day_of_year: 256  # 256-й день года
+```
+
 ## 🏗️ Структура проекта
 
 ```
@@ -138,6 +154,167 @@ Event/
 go test ./... -v
 ```
 
+## 🐳 Развертывание с Docker на Timeweb Cloud
+
+### Требования
+
+- Аккаунт в Docker Hub
+- VPS на Timeweb Cloud (Ubuntu 22.04)
+
+### Шаг 1: Создание Docker-образа
+
+1. Создайте `Dockerfile` в корне проекта:
+
+```
+FROM golang:1.21-alpine AS builder
+WORKDIR /app
+COPY . .
+RUN go mod download
+RUN go build -o main .
+
+FROM alpine:latest
+WORKDIR /app
+COPY --from=builder /app/main .
+COPY --from=builder /app/config.json .
+COPY --from=builder /app/events.yml .
+COPY --from=builder /app/.env .
+EXPOSE 8080
+CMD ["./main"]
+```
+
+2. Соберите Docker-образ:
+
+```bash
+docker build -t event-bot .
+```
+
+3. Протестируйте локально:
+
+```bash
+docker run -d --name event-bot event-bot
+```
+
+### Шаг 2: Публикация образа в Docker Hub
+
+1. Авторизуйтесь в Docker Hub:
+
+```bash
+docker login
+```
+
+2. Создайте тег для образа:
+
+```bash
+docker tag event-bot ваш_пользователь/event-bot:latest
+```
+
+3. Загрузите образ:
+
+```bash
+docker push ваш_пользователь/event-bot:latest
+```
+
+### Шаг 3: Настройка VPS на Timeweb Cloud
+
+1. Создайте VPS на Timeweb Cloud (Ubuntu 22.04)
+2. Подключитесь к серверу по SSH:
+
+```bash
+ssh root@ваш_ip_адрес
+```
+
+3. Обновите систему:
+
+```bash
+apt update
+```
+
+4. Установите Docker:
+
+```bash
+apt install -y apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+apt update
+apt install -y docker-ce
+```
+
+5. Настройте автозапуск Docker:
+
+```bash
+systemctl enable docker
+systemctl start docker
+```
+
+### Шаг 4: Запуск бота на сервере
+
+1. Скачайте образ с Docker Hub:
+
+```bash
+docker pull ваш_пользователь/event-bot:latest
+```
+
+2. Запустите контейнер с автоперезапуском:
+
+```bash
+docker run -d --name event-bot --restart always ваш_пользователь/event-bot:latest
+```
+
+3. Проверьте статус контейнера:
+
+```bash
+docker ps
+```
+
+4. Просмотрите логи:
+
+```bash
+docker logs event-bot
+```
+
+### Если нужно сохранение данных между перезапусками
+
+Если ваш бот хранит состояние на диске, используйте тома Docker:
+
+```bash
+docker run -d --name event-bot \
+  -v event-data:/app/data \
+  --restart always \
+  ваш_пользователь/event-bot:latest
+```
+
+### Обновление бота
+
+Для обновления бота:
+
+1. Остановите и удалите существующий контейнер:
+
+```bash
+docker stop event-bot
+docker rm event-bot
+```
+
+2. Загрузите последний образ:
+
+```bash
+docker pull ваш_пользователь/event-bot:latest
+```
+
+3. Запустите новую версию бота:
+
+```bash
+docker run -d --name event-bot --restart always ваш_пользователь/event-bot:latest
+```
+
+### Мониторинг и поддержка
+
+- Проверка статуса: `docker ps`
+- Просмотр логов: `docker logs event-bot`
+- Просмотр логов в реальном времени: `docker logs -f event-bot`
+- Перезапуск бота: `docker restart event-bot`
+
+При возникновении проблем Docker автоматически перезапустит бот благодаря флагу `--restart always`.
+
 ## 📝 Лицензия
 
-Copyright © 2024 Mr-Cheen1
+Copyright © 2025 Mr-Cheen1
